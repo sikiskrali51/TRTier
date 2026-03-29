@@ -94,9 +94,9 @@ public class PlayerSearchScreen extends CloseableScreen {
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void resize(Minecraft minecraft, int width, int height) {
         String string = this.textField.getText();
-        this.init(width, height);
+        this.init(minecraft, width, height);
         this.textField.setText(string);
     }
 
