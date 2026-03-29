@@ -233,7 +233,7 @@ public class TierTagger implements ModInitializer {
     }
 
     private static void checkForUpdates() {
-        String versionParam = "[\"%s\"]".formatted(SharedConstants.getCurrentVersion().name());
+        String versionParam = "[\"%s\"]".formatted(SharedConstants.getCurrentVersion().getName());
         String fullUrl = UPDATE_URL_FORMAT.formatted(URLEncoder.encode(versionParam, StandardCharsets.UTF_8));
 
         HttpRequest request = HttpRequest.newBuilder(URI.create(fullUrl)).GET().build();

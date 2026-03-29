@@ -24,7 +24,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.16",
-    "minecraft": ">=1.21.8",
-    "ukulib": "^1.8.2"
+    "minecraft": ">=1.21.4",
+    "ukulib": "^1.6.0"
   }
 }
