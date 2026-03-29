@@ -37,9 +37,9 @@ public class TTConfigScreen extends TabbedConfigScreen<TierTaggerConfig> {
             return new WidgetCreator[]{
                     CyclingOption.ofBoolean("tiertagger.config.enabled", config.isEnabled(), config::setEnabled),
                     new CyclingOption<>("tiertagger.config.gamemode", TierCache.getGamemodes(), config.getGameMode(), m -> config.setGameMode(m.id()), m -> Component.literal(m.title()),
-                            m -> m.isNone() ? Tooltip.create(Component.translatable("tiertagger.config.gamemode.none")) : null, !config.getGameMode().isNone()),
+                            m -> m.isNone() ? Tooltip.create(Component.translatable("tiertagger.config.gamemode.none")) : null),
                     CyclingOption.ofBoolean("tiertagger.config.retired", config.isShowRetired(), config::setShowRetired),
-                    CyclingOption.ofTranslatableEnum("tiertagger.config.highest", TierTaggerConfig.HighestMode.class, config.getHighestMode(), config::setHighestMode, OptionInstance.cachedConstantTooltip(Component.translatable("tiertagger.config.highest.desc"))),
+                    CyclingOption.ofTranslatableEnum("tiertagger.config.highest", TierTaggerConfig.HighestMode.class, config.getHighestMode(), config::setHighestMode),
                     CyclingOption.ofBoolean("tiertagger.config.icons", config.isShowIcons(), config::setShowIcons),
                     CyclingOption.ofBoolean("tiertagger.config.playerList", config.isPlayerList(), config::setPlayerList),
                     new SimpleButton("tiertagger.clear", b -> TierCache.clearCache()),
@@ -57,21 +57,21 @@ public class TTConfigScreen extends TabbedConfigScreen<TierTaggerConfig> {
         protected WidgetCreator[] getWidgets(TierTaggerConfig config) {
             Optional<TierList> current = TierList.findByUrl(config.getApiUrl());
 
-            List<WidgetCreator> widgets = Arrays.stream(TierList.values())
+            List<WidgetCreator> widgets = (List<WidgetCreator>) (List<?>) Arrays.stream(TierList.values())
                     .map(t -> {
                         boolean isCurrent = current.isPresent() && current.get() == t;
-                        return new SimpleButton(Component.literal(t.styledName(isCurrent)), b -> {
+                        return new SimpleButton(t.styledName(isCurrent), b -> {
                             config.setApiUrl(t.getUrl());
                             TierTagger.getManager().saveConfig();
                             TTConfigScreen.this.onClose();
                             TierCache.init();
                             Ukutils.sendToast(Component.literal("Tierlist changed to " + t.getName() + "!"), Component.literal("Reloading tiers..."));
-                        }, !isCurrent);
+                        });
                     })
                     .collect(Collectors.toList());
 
             if (current.isEmpty()) {
-                widgets.add(new SimpleButton(Component.literal("Custom (selected, " + config.getApiUrl() + ")"), b -> {}, false));
+                widgets.add(new SimpleButton("Custom (selected, " + config.getApiUrl() + ")", b -> {}));
             }
 
             return widgets.toArray(WidgetCreator[]::new);
@@ -89,7 +89,7 @@ public class TTConfigScreen extends TabbedConfigScreen<TierTaggerConfig> {
             Comparator<Map.Entry<String, Integer>> comparator = Comparator.comparing(e -> e.getKey().charAt(2));
             comparator = comparator.thenComparing(e -> e.getKey().charAt(0));
 
-            List<ColorOption> tiers = config.getTierColors().entrySet().stream()
+            List<WidgetCreator> tiers = (List<WidgetCreator>) (List<?>) config.getTierColors().entrySet().stream()
                     .sorted(comparator)
                     .map(e -> new ColorOption(e.getKey(), e.getValue(), val -> config.getTierColors().put(e.getKey(), val)))
                     .collect(Collectors.toList());

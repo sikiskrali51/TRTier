@@ -11,7 +11,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.Services;
-import net.minecraft.world.entity.player.PlayerSkin;
+import net.minecraft.client.resources.PlayerSkin;
 import net.uku3lig.ukulib.config.option.widget.TextInputWidget;
 import net.uku3lig.ukulib.config.screen.CloseableScreen;
 import net.uku3lig.ukulib.utils.Ukutils;
@@ -70,12 +70,9 @@ public class PlayerSearchScreen extends CloseableScreen {
         this.searching = true;
         this.searchButton.setMessage(Component.translatable("tiertagger.search.loading"));
 
-        Services services = Minecraft.getInstance().services();
         CompletableFuture<PlayerSkinWidget> skinFuture = CompletableFuture.supplyAsync(() -> {
-            GameProfile profile = services.profileResolver().fetchByName(username)
-                    .orElseGet(() -> new GameProfile(UUID.randomUUID(), username));
-
-            Supplier<PlayerSkin> skinSupplier = Minecraft.getInstance().getSkinManager().createLookup(profile, true);
+            GameProfile profile = new GameProfile(java.util.UUID.randomUUID(), username);
+            Supplier<PlayerSkin> skinSupplier = () -> Minecraft.getInstance().getSkinManager().getInsecureSkin(profile);
             PlayerSkinWidget skin = new PlayerSkinWidget(60, 144, Minecraft.getInstance().getEntityModels(), skinSupplier);
             skin.setPosition(this.width / 2 - 65, (this.height - 144) / 2);
             return skin;
@@ -94,9 +91,9 @@ public class PlayerSearchScreen extends CloseableScreen {
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void resize(Minecraft minecraft, int width, int height) {
         String string = this.textField.getText();
-        this.init(width, height);
+        this.init(minecraft, width, height);
         this.textField.setText(string);
     }
 

@@ -7,7 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.uku3lig.ukulib.config.option.StringTranslatable;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.OptionEnum;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -64,7 +65,7 @@ public class TierTaggerConfig implements Serializable {
 
     @Getter
     @AllArgsConstructor
-    public enum HighestMode implements StringTranslatable {
+    public enum HighestMode implements StringRepresentable, OptionEnum {
         NEVER("never", "tiertagger.highest.never"),
         NOT_FOUND("not_found", "tiertagger.highest.not_found"),
         ALWAYS("always", "tiertagger.highest.always"),
@@ -72,5 +73,20 @@ public class TierTaggerConfig implements Serializable {
 
         private final String name;
         private final String translationKey;
+
+        @Override
+        public String getSerializedName() {
+            return this.name;
+        }
+
+        @Override
+        public int getId() {
+            return this.ordinal();
+        }
+
+        @Override
+        public String getKey() {
+            return this.translationKey;
+        }
     }
 }

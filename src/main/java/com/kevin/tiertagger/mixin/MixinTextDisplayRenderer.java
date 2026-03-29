@@ -24,32 +24,6 @@ public class MixinTextDisplayRenderer {
     @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/Display$TextDisplay;Lnet/minecraft/client/renderer/entity/state/TextDisplayEntityRenderState;F)V",
             at = @At("RETURN"))
     private void addTier(Display.TextDisplay entity, TextDisplayEntityRenderState renderState, float partialTick, CallbackInfo ci) {
-        if (!TierTagger.getManager().getConfig().isEnabled()) return;
-        if (renderState.cachedInfo == null) return;
-        if (!(entity.getVehicle() instanceof Player player)) return;
-
-        List<Display.TextDisplay.CachedLine> lines = renderState.cachedInfo.lines();
-        for (int i = 0; i < lines.size(); i++) {
-            final Display.TextDisplay.CachedLine line = lines.get(i);
-            final Component lineText = Ukutils.getStyledText(line.contents());
-            final String lineString = lineText.getString();
-            if (lineString.isBlank() || !lineString.contains(player.getScoreboardName())) continue;
-
-            final Component modified = TierTagger.appendTier(player.getUUID(), player.getScoreboardName(), lineText);
-            if (modified == lineText) return; // no pops or counter disabled
-
-            final FormattedCharSequence modifiedSeq = modified.getVisualOrderText();
-            final int newLineWidth = Minecraft.getInstance().font.width(modified);
-
-            final List<Display.TextDisplay.CachedLine> newLines = new ArrayList<>(lines);
-            newLines.set(i, new Display.TextDisplay.CachedLine(modifiedSeq, newLineWidth));
-
-            final int newMaxWidth = newLines.stream()
-                    .mapToInt(Display.TextDisplay.CachedLine::width)
-                    .max().orElse(renderState.cachedInfo.width());
-
-            renderState.cachedInfo = new Display.TextDisplay.CachedInfo(newLines, newMaxWidth);
-            return;
-        }
+        // Disabled for older versions due to missing Ukutils.getStyledText and RenderState
     }
 }
